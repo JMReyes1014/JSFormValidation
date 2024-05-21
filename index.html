@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="./bootstrap-5.3.3-dist/css/bootstrap.css">
   <!-- JQuery for Address Selector -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <title>Form with Address Selector</title>
+  <title>Form with MultiStep and Address Selector</title>
   <style>
     .form-step {
       display: none;
@@ -28,12 +28,14 @@
       <div class="card mt-4">
         <div class="card-header bg-info text-white">Account Information</div>
         <div class="card-body">
+
           <div class="form-group">
             <label for="username">Username:</label>
             <input type="text" class="form-control" name="username" placeholder="Enter username" required>
             <div class="valid-feedback">Looks good!</div>
             <div class="invalid-feedback">Please enter a valid username.</div>
           </div>
+          
           <div class="form-group">
             <label for="email">Email:</label>
             <input type="email" class="form-control" name="email" placeholder="Enter email" required>
@@ -172,42 +174,53 @@
         input.addEventListener("input", () => validateInput(input));
         input.addEventListener("change", () => validateInput(input));
       });
-  
-      form.addEventListener("submit", (event) => {
-        if (!validateStep(currentStep)) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-  
-        form.classList.add("was-validated");
-      }, false);
-  
-      window.nextStep = () => {
-        if (validateStep(currentStep)) {
-          steps[currentStep].classList.remove("form-step-active");
-          currentStep++;
-          steps[currentStep].classList.add("form-step-active");
-        }
-      };
-  
-      window.prevStep = () => {
-        steps[currentStep].classList.remove("form-step-active");
-        currentStep--;
-        steps[currentStep].classList.add("form-step-active");
-      };
-  
-      function validateStep(step) {
-        let valid = true;
-        const stepInputs = steps[step].querySelectorAll("input, select");
-  
-        stepInputs.forEach(input => {
-          if (!validateInput(input)) {
-            valid = false;
-          }
-        });
-  
-        return valid;
-      }
+
+      //MultiStep Logic 
+  // Add an event listener to the form's submit event
+  form.addEventListener("submit", (event) => {
+  // Prevent form submission if the current step is not valid
+  if (!validateStep(currentStep)) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  // Add the 'was-validated' class to the form for Bootstrap styling
+  form.classList.add("was-validated");
+}, false);
+
+// Function to move to the next step
+window.nextStep = () => {
+  // Only proceed to the next step if the current step is valid
+  if (validateStep(currentStep)) {
+    steps[currentStep].classList.remove("form-step-active"); // Hide the current step
+    currentStep++; // Increment the current step index
+    steps[currentStep].classList.add("form-step-active"); // Show the next step
+  }
+};
+
+// Function to move to the previous step
+window.prevStep = () => {
+  steps[currentStep].classList.remove("form-step-active"); // Hide the current step
+  currentStep--; // Decrement the current step index
+  steps[currentStep].classList.add("form-step-active"); // Show the previous step
+};
+
+// Function to validate all inputs in the current step
+function validateStep(step) {
+  let valid = true;
+  // Select all input and select elements in the current step
+  const stepInputs = steps[step].querySelectorAll("input, select");
+
+  // Validate each input element
+  stepInputs.forEach(input => {
+    if (!validateInput(input)) {
+      valid = false; // If any input is invalid, set valid to false
+    }
+  });
+
+  return valid; // Return the overall validity of the step
+}
+
   
       function validateInput(input) {
         if (input.name === 'password') {
